@@ -40,11 +40,14 @@ export async function POST(req: NextRequest) {
     }, 'Hello, this is Sarah from First National Bank. I am calling regarding your overdue credit card payment of $1,250.00. May I speak with you?');
     
     // Use Gather to collect user input and create interactive conversation
+    const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
+    console.log('🔗 Webhook URL:', `${webhookUrl}/api/call/interactive`);
+    
     const gather = twiml.gather({
       input: ['speech'],
       timeout: 10,
       speechTimeout: 'auto',
-      action: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/interactive`,
+      action: `${webhookUrl}/api/call/interactive`,
       method: 'POST',
       actionOnEmptyResult: true
     });
@@ -66,11 +69,11 @@ export async function POST(req: NextRequest) {
       twiml: twiml.toString(),
       to: phoneNumber,
       from: process.env.TWILIO_PHONE_NUMBER!,
-      statusCallback: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/status`,
+      statusCallback: `${webhookUrl}/api/call/status`,
       statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed'],
       statusCallbackMethod: 'POST',
       record: true,
-      recordingStatusCallback: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/recording`,
+      recordingStatusCallback: `${webhookUrl}/api/call/recording`,
       recordingStatusCallbackEvent: ['completed']
     });
 

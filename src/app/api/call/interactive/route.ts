@@ -53,11 +53,12 @@ export async function POST(req: NextRequest) {
         }, aiResponse);
 
         // Continue the conversation
+        const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
         const gather = twiml.gather({
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/interactive`,
+          action: `${webhookUrl}/api/call/interactive`,
           method: 'POST',
           actionOnEmptyResult: true
         });
@@ -88,11 +89,12 @@ export async function POST(req: NextRequest) {
       }, 'I didn\'t catch that. Could you please repeat? We have several payment options available to help you resolve your account.');
       
       // Try to gather input again
+      const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
       const gather = twiml.gather({
         input: ['speech'],
         timeout: 8,
         speechTimeout: 'auto',
-        action: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/interactive`,
+        action: `${webhookUrl}/api/call/interactive`,
         method: 'POST',
         actionOnEmptyResult: true
       });

@@ -210,6 +210,38 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
     }
   }, [phoneNumber, roomInfo?.name, addCallLog]);
 
+  const makeSimpleTestCall = useCallback(async () => {
+    if (!phoneNumber.trim()) {
+      alert('Please enter a phone number');
+      return;
+    }
+    setIsCalling(true);
+    setCallStatus('Initiating simple test call...');
+    addCallLog(`Initiating simple test call to ${phoneNumber}`);
+    try {
+      const response = await fetch('/api/call/simple-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phoneNumber }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setActiveCall(data);
+        setCallStatus(`Simple test call ${data.status} - SID: ${data.callSid}`);
+        addCallLog(`Simple test call initiated - SID: ${data.callSid}`);
+      } else {
+        setCallStatus(`Simple test call failed: ${data.error}`);
+        addCallLog(`Simple test call failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error making simple test call:', error);
+      setCallStatus('Simple test call failed - network error');
+      addCallLog('Simple test call failed - network error');
+    } finally {
+      setIsCalling(false);
+    }
+  }, [phoneNumber, addCallLog]);
+
   const checkCallStatus = useCallback(async (callSid: string) => {
     try {
       const response = await fetch(`/api/call?callSid=${callSid}`);
@@ -321,6 +353,15 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
                 className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isCalling ? 'Calling...' : '📞 Call'}
+              </button>
+            </div>
+            <div className="flex space-x-2 mb-3">
+              <button
+                onClick={makeSimpleTestCall}
+                disabled={isCalling || !phoneNumber.trim()}
+                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                🧪 Simple Test Call
               </button>
             </div>
             
