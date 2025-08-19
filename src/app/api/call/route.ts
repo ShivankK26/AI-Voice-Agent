@@ -18,11 +18,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate phone number format (US numbers)
-    const phoneRegex = /^\+1\d{10}$/;
+    // Validate phone number format (International numbers)
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phoneNumber)) {
       return NextResponse.json(
-        { error: 'Please provide a valid US phone number in format +1XXXXXXXXXX' },
+        { error: 'Please provide a valid international phone number in format +[country code][number]' },
         { status: 400 }
       );
     }
@@ -33,17 +33,20 @@ export async function POST(req: NextRequest) {
     // Create TwiML for the call
     const twiml = new twilio.twiml.VoiceResponse();
     
-    // Connect the call to LiveKit SIP
+    // Welcome message
     twiml.say({
-      voice: 'alice'
-    }, 'Connecting you to our debt collection agent.');
+      voice: 'alice',
+      language: 'en-US'
+    }, 'Hello, this is Sarah from First National Bank. I am calling regarding your overdue credit card payment of $1,250.00. May I speak with you?');
     
-    // Connect to LiveKit SIP endpoint
-    twiml.sip({
-      username: process.env.LIVEKIT_API_KEY,
-      password: process.env.LIVEKIT_API_SECRET,
-      url: `sip:${process.env.SIP_URL?.replace('sip:', '')}?room=${callRoomName}&identity=debt-collection-agent`
-    });
+    // Add a pause for response
+    twiml.pause({ length: 2 });
+    
+    // Continue with debt collection script
+    twiml.say({
+      voice: 'alice',
+      language: 'en-US'
+    }, 'I understand this may be a difficult situation. We have several payment options available to help you resolve this account. Would you like to discuss payment arrangements?');
 
     // Make the outbound call using Twilio
     const call = await client.calls.create({

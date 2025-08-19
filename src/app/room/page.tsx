@@ -120,7 +120,7 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
   const [conversationState, setConversationState] = useState<'waiting' | 'active' | 'ended'>('waiting');
   const [callLog, setCallLog] = useState<string[]>([]);
   const [customerInput, setCustomerInput] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('+918285249249');
   const [isCalling, setIsCalling] = useState(false);
   const [callStatus, setCallStatus] = useState<string>('');
   const [activeCall, setActiveCall] = useState<any>(null);
@@ -166,10 +166,10 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
       return;
     }
 
-    // Validate US phone number format
-    const phoneRegex = /^\+1\d{10}$/;
+    // Validate international phone number format
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phoneNumber)) {
-      alert('Please enter a valid US phone number in format +1XXXXXXXXXX');
+      alert('Please enter a valid international phone number in format +[country code][number]');
       return;
     }
 
@@ -302,7 +302,9 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
         <div className="flex flex-col space-y-4">
           {/* Phone Call Interface */}
           <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-3">📞 Outbound Phone Call</h3>
+            <div className="mb-3">
+              <h3 className="text-lg font-semibold text-white">📞 Outbound Phone Call</h3>
+            </div>
             
             {/* Phone Number Input */}
             <div className="flex space-x-2 mb-3">
@@ -310,7 +312,7 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
                 type="text"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="+1XXXXXXXXXX (US number)"
+                placeholder="+918285249249 (Your number)"
                 className="flex-1 px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
               <button

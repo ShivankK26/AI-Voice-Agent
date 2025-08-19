@@ -12,7 +12,7 @@ A sophisticated AI-powered debt collection voice agent built with LiveKit, Next.
 - 🛡️ **Robust Error Handling**: Handles edge cases, interruptions, and unexpected responses
 - 📊 **Call Analytics**: Real-time call logging, recording, and status tracking
 - 🎨 **Modern UI**: Clean, professional interface with real-time status updates
-- 📱 **US Phone Support**: Works with US phone numbers for outbound calls
+- 📱 **International Phone Support**: Works with international phone numbers for outbound calls
 
 ## Tech Stack
 
@@ -31,7 +31,7 @@ Before running this application, you'll need:
 1. **LiveKit Cloud Account**: Sign up at [cloud.livekit.io](https://cloud.livekit.io/)
 2. **Twilio Account**: Sign up at [twilio.com](https://www.twilio.com/)
 3. **Anthropic Account**: Sign up at [console.anthropic.com](https://console.anthropic.com/)
-4. **US Phone Number**: Required for outbound calls (purchase through Twilio)
+4. **Twilio Phone Number**: Required for outbound calls (purchase through Twilio)
 5. **Node.js**: Version 18 or higher
 6. **Yarn**: Package manager
 
@@ -53,8 +53,8 @@ yarn install
 
 2. **Twilio Setup**:
    - Go to [Twilio Console](https://console.twilio.com/) and get your credentials
-   - Purchase a US phone number with Voice capabilities
-   - Follow the [Twilio Setup Guide](./TWILIO_SETUP.md) for detailed configuration
+   - Purchase a phone number with Voice capabilities
+   - Configure webhook URLs for call status updates
 
 3. **Update Environment Variables**:
 
@@ -66,7 +66,7 @@ LIVEKIT_URL=wss://your-project.livekit.cloud
 NEXT_PUBLIC_LIVEKIT_URL=wss://your-project.livekit.cloud
 
 # Twilio Configuration
-TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
+TWILIO_PHONE_NUMBER=+1XXXXXXXXXX  # Your Twilio outbound number
 ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
