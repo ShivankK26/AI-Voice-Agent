@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
     "@livekit/components-react": "^2.9.14",
     "@livekit/components-styles": "^1.1.6",
     "livekit-client": "^2.15.5",
@@ -16,7 +17,8 @@
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tslib": "^2.8.1"
+    "tslib": "^2.8.1",
+    "twilio": "^5.8.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

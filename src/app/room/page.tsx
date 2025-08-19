@@ -14,7 +14,7 @@ import {
 import { Room, Track, Participant, RemoteParticipant } from 'livekit-client';
 import '@livekit/components-styles';
 import { useEffect, useState, useCallback } from 'react';
-import { useDebtCollectionAgent } from '../../components/DebtCollectionAgent';
+import { useAnthropicDebtCollectionAgent } from '../../components/AnthropicDebtCollectionAgent';
 
 export default function VoiceAgentRoom() {
   const [roomInstance] = useState(() => new Room({
@@ -120,16 +120,20 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
   const [conversationState, setConversationState] = useState<'waiting' | 'active' | 'ended'>('waiting');
   const [callLog, setCallLog] = useState<string[]>([]);
   const [customerInput, setCustomerInput] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [isCalling, setIsCalling] = useState(false);
+  const [callStatus, setCallStatus] = useState<string>('');
+  const [activeCall, setActiveCall] = useState<any>(null);
   
   // AI Agent integration
   const {
     currentMessage,
-    isSpeaking,
+    isProcessing: isSpeaking,
     startConversation,
     processCustomerInput,
     resetConversation,
-    getState
-  } = useDebtCollectionAgent();
+    callContext
+  } = useAnthropicDebtCollectionAgent();
 
   const tracks = useTracks(
     [
@@ -155,6 +159,74 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
       setCustomerInput('');
     }
   }, [customerInput, processCustomerInput, addCallLog]);
+
+  const makeOutboundCall = useCallback(async () => {
+    if (!phoneNumber.trim()) {
+      alert('Please enter a phone number');
+      return;
+    }
+
+    // Validate US phone number format
+    const phoneRegex = /^\+1\d{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      alert('Please enter a valid US phone number in format +1XXXXXXXXXX');
+      return;
+    }
+
+    setIsCalling(true);
+    setCallStatus('Initiating call...');
+    addCallLog(`Initiating outbound call to ${phoneNumber}`);
+
+    try {
+      const response = await fetch('/api/call', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: phoneNumber,
+          customerName: 'Customer',
+          amount: 1500,
+          roomName: roomInfo?.name || 'debt-collection-room'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setActiveCall(data);
+        setCallStatus(`Call ${data.status} - SID: ${data.callSid}`);
+        addCallLog(`Call initiated successfully - SID: ${data.callSid}`);
+      } else {
+        setCallStatus(`Call failed: ${data.error}`);
+        addCallLog(`Call failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error making call:', error);
+      setCallStatus('Call failed - network error');
+      addCallLog('Call failed - network error');
+    } finally {
+      setIsCalling(false);
+    }
+  }, [phoneNumber, roomInfo?.name, addCallLog]);
+
+  const checkCallStatus = useCallback(async (callSid: string) => {
+    try {
+      const response = await fetch(`/api/call?callSid=${callSid}`);
+      const data = await response.json();
+      
+      if (data.status) {
+        setCallStatus(`Call ${data.status} - Duration: ${data.duration || 0}s`);
+        addCallLog(`Call status: ${data.status}`);
+        
+        if (data.status === 'completed' || data.status === 'failed' || data.status === 'busy' || data.status === 'no-answer') {
+          setActiveCall(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking call status:', error);
+    }
+  }, [addCallLog]);
 
   useEffect(() => {
     if (!roomInstance) return;
@@ -228,13 +300,59 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
       {/* Agent Controls */}
       <div className="bg-gray-800 p-4">
         <div className="flex flex-col space-y-4">
+          {/* Phone Call Interface */}
+          <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
+            <h3 className="text-lg font-semibold text-white mb-3">📞 Outbound Phone Call</h3>
+            
+            {/* Phone Number Input */}
+            <div className="flex space-x-2 mb-3">
+              <input
+                type="text"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+1XXXXXXXXXX (US number)"
+                className="flex-1 px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              />
+              <button
+                onClick={makeOutboundCall}
+                disabled={isCalling || !phoneNumber.trim()}
+                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isCalling ? 'Calling...' : '📞 Call'}
+              </button>
+            </div>
+            
+            {/* Call Status */}
+            {callStatus && (
+              <div className="bg-blue-900 p-2 rounded text-sm text-white">
+                {callStatus}
+              </div>
+            )}
+            
+            {/* Active Call Info */}
+            {activeCall && (
+              <div className="bg-green-900 p-2 rounded text-sm text-white">
+                Active Call: {activeCall.callSid}
+                <button
+                  onClick={() => checkCallStatus(activeCall.callSid)}
+                  className="ml-2 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                >
+                  Check Status
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* AI Agent Status */}
           {currentMessage && (
             <div className="bg-blue-900 p-3 rounded-lg">
               <div className="flex items-center space-x-2">
                 <div className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`}></div>
-                <span className="text-sm text-gray-300">AI Agent:</span>
+                <span className="text-sm text-gray-300">Claude AI:</span>
                 <span className="text-white">{currentMessage}</span>
+              </div>
+              <div className="mt-2 text-xs text-gray-400">
+                Stage: {callContext.callStage} | Amount: ${callContext.amount} | Due: {callContext.dueDate}
               </div>
             </div>
           )}
