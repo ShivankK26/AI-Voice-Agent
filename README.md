@@ -7,12 +7,12 @@ A sophisticated AI-powered debt collection voice agent built with LiveKit, Next.
 - 🤖 **Claude AI-Powered**: Real-time conversations using Anthropic's Claude 3.5 Sonnet
 - 🎯 **Debt Collection Focus**: Specialized for payment reminders and collection scenarios
 - 📞 **Real Outbound Phone Calls**: Actually dials customers using Twilio
-- 🔄 **LiveKit Integration**: Real-time voice communication with SIP
-- 🧠 **Intelligent Responses**: Dynamic, context-aware conversations
+- 🧠 **Intelligent Responses**: Dynamic, context-aware conversations with speech recognition
 - 🛡️ **Robust Error Handling**: Handles edge cases, interruptions, and unexpected responses
 - 📊 **Call Analytics**: Real-time call logging, recording, and status tracking
 - 🎨 **Modern UI**: Clean, professional interface with real-time status updates
 - 📱 **International Phone Support**: Works with international phone numbers for outbound calls
+- 🎤 **Interactive Voice**: Real-time speech recognition and AI responses
 
 ## Tech Stack
 
@@ -28,12 +28,11 @@ A sophisticated AI-powered debt collection voice agent built with LiveKit, Next.
 
 Before running this application, you'll need:
 
-1. **LiveKit Cloud Account**: Sign up at [cloud.livekit.io](https://cloud.livekit.io/)
-2. **Twilio Account**: Sign up at [twilio.com](https://www.twilio.com/)
-3. **Anthropic Account**: Sign up at [console.anthropic.com](https://console.anthropic.com/)
-4. **Twilio Phone Number**: Required for outbound calls (purchase through Twilio)
-5. **Node.js**: Version 18 or higher
-6. **Yarn**: Package manager
+1. **Twilio Account**: Sign up at [twilio.com](https://www.twilio.com/)
+2. **Anthropic Account**: Sign up at [console.anthropic.com](https://console.anthropic.com/)
+3. **Twilio Phone Number**: Required for outbound calls (purchase through Twilio)
+4. **Node.js**: Version 18 or higher
+5. **Yarn**: Package manager
 
 ## Setup Instructions
 
@@ -44,27 +43,20 @@ cd riverline-assignment
 yarn install
 ```
 
-### 2. Configure LiveKit and Twilio
+### 2. Configure Twilio and Anthropic
 
-1. **LiveKit Setup**:
-   - Go to [LiveKit Cloud](https://cloud.livekit.io/) and create a new project
-   - Get your API Key, API Secret, and WebSocket URL
-   - Enable SIP functionality in project settings
-
-2. **Twilio Setup**:
+1. **Twilio Setup**:
    - Go to [Twilio Console](https://console.twilio.com/) and get your credentials
    - Purchase a phone number with Voice capabilities
    - Configure webhook URLs for call status updates
 
+2. **Anthropic Setup**:
+   - Go to [Anthropic Console](https://console.anthropic.com/) and get your API key
+   - Ensure you have access to Claude 3.5 Sonnet
+
 3. **Update Environment Variables**:
 
 ```env
-# LiveKit Configuration
-LIVEKIT_API_KEY=your_api_key_here
-LIVEKIT_API_SECRET=your_api_secret_here
-LIVEKIT_URL=wss://your-project.livekit.cloud
-NEXT_PUBLIC_LIVEKIT_URL=wss://your-project.livekit.cloud
-
 # Twilio Configuration
 TWILIO_PHONE_NUMBER=+1XXXXXXXXXX  # Your Twilio outbound number
 ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -73,11 +65,8 @@ AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # Anthropic AI Configuration
 ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# SIP Configuration
-SIP_URL=sip:your-sip-endpoint.sip.livekit.cloud
-
-# Base URL for webhooks
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+# Base URL for webhooks (use ngrok for local testing)
+NEXT_PUBLIC_BASE_URL=https://your-ngrok-url.ngrok-free.app
 ```
 
 ### 3. Run the Development Server
@@ -103,20 +92,20 @@ The voice agent is configured for a debt collection scenario:
 ### How to Test
 
 1. **Setup Complete Integration**:
-   - Follow the [Twilio Setup Guide](./TWILIO_SETUP.md)
    - Ensure all environment variables are configured
-   - Configure SIP trunk in Twilio console
+   - Start ngrok: `ngrok http 3000`
+   - Update `NEXT_PUBLIC_BASE_URL` with your ngrok URL
 
 2. **Test Real Phone Calls**:
    - Navigate to the voice agent interface
-   - Enter a US phone number in format `+1XXXXXXXXXX`
+   - Enter an international phone number in format `+[country code][number]`
    - Click "📞 Call" to make a real outbound call
    - Monitor call status and logs in real-time
 
 3. **Monitor Calls**:
    - Check call logs for status updates
    - Monitor Twilio console for call details
-   - View LiveKit room for participant connections
+   - View real-time conversation with Claude AI
 
 ## Project Structure
 

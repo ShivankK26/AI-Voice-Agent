@@ -5,6 +5,9 @@
 ### **Unused API Endpoints:**
 - ❌ `src/app/api/call/test/` - Test call simulation endpoint
 - ❌ `src/app/api/call/inbound/` - Inbound call handler (not needed for outbound-only system)
+- ❌ `src/app/api/call/test-webhook/` - Debug webhook test endpoint
+- ❌ `src/app/api/call/simple-test/` - Simple test call endpoint
+- ❌ `src/app/api/debug/env/` - Environment debug endpoint
 
 ### **Unused Pages:**
 - ❌ `src/app/inbound/` - Inbound call setup page
@@ -17,12 +20,16 @@
 - ❌ `TWILIO_SETUP.md` - Detailed Twilio guide (simplified in README)
 - ❌ `IMPLEMENTATION_SUMMARY.md` - Implementation details (no longer needed)
 - ❌ `TEST_SETUP.md` - Test mode guide (removed with test mode)
+- ❌ `LIVEKIT_SIP_SETUP_GUIDE.md` - LiveKit SIP setup guide (not needed)
+- ❌ `TROUBLESHOOTING_GUIDE.md` - Troubleshooting guide (no longer needed)
+- ❌ `INTERACTIVE_CALL_GUIDE.md` - Interactive call guide (no longer needed)
 
 ### **UI Elements:**
 - ❌ Test mode toggle checkbox
 - ❌ Test mode state management
 - ❌ Inbound calls navigation link
 - ❌ Inbound calls setup button
+- ❌ Simple test call button (no longer needed)
 
 ## ✅ **What Remains (Active Files)**
 
