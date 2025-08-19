@@ -33,7 +33,8 @@
 
 ### **API Endpoints:**
 - ✅ `src/app/api/token/route.ts` - LiveKit token generation
-- ✅ `src/app/api/call/route.ts` - Outbound call initiation
+- ✅ `src/app/api/call/route.ts` - Outbound call initiation with speech recognition
+- ✅ `src/app/api/call/interactive/route.ts` - Interactive conversation handling
 - ✅ `src/app/api/call/status/route.ts` - Call status webhooks
 - ✅ `src/app/api/call/recording/route.ts` - Call recording webhooks
 - ✅ `src/app/api/ai/conversation/route.ts` - Claude AI conversation
@@ -49,14 +50,14 @@
 
 ### **Active Functionality:**
 1. **Outbound Phone Calls** - Twilio calls your phone number
-2. **AI Conversation** - Claude AI handles debt collection scenarios
-3. **Call Logging** - Real-time call status and recording
-4. **LiveKit Integration** - Voice communication infrastructure
+2. **Interactive AI Conversation** - Claude AI responds to your speech
+3. **Speech Recognition** - Understands what you say
+4. **Call Logging** - Real-time call status and recording
 5. **Web Interface** - Clean, professional UI
 
 ### **Simplified Flow:**
 ```
-User clicks "Call" → Twilio calls your phone → AI agent speaks → Real conversation
+User clicks "Call" → Twilio calls your phone → AI speaks → You respond → AI responds → Conversation continues
 ```
 
 ## 📊 **Code Reduction**
