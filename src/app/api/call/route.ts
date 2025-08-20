@@ -39,25 +39,41 @@ export async function POST(req: NextRequest) {
       language: 'en-US'
     }, 'Hello, this is Sarah from First National Bank. I am calling regarding your overdue credit card payment of $1,250.00. May I speak with you?');
     
-    // Add a pause for response
-    twiml.pause({ length: 2 });
+    // Use Gather to collect user input and create interactive conversation
+    const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
+    console.log('🔗 Webhook URL:', `${webhookUrl}/api/call/interactive`);
     
-    // Continue with debt collection script
-    twiml.say({
+    const gather = twiml.gather({
+      input: ['speech'],
+      timeout: 10,
+      speechTimeout: 'auto',
+      action: `${webhookUrl}/api/call/interactive`,
+      method: 'POST',
+      actionOnEmptyResult: true
+    });
+    
+    // Fallback if no input is received
+    gather.say({
       voice: 'alice',
       language: 'en-US'
     }, 'I understand this may be a difficult situation. We have several payment options available to help you resolve this account. Would you like to discuss payment arrangements?');
+    
+    // If no input after gather, end call gracefully
+    twiml.say({
+      voice: 'alice',
+      language: 'en-US'
+    }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
 
     // Make the outbound call using Twilio
     const call = await client.calls.create({
       twiml: twiml.toString(),
       to: phoneNumber,
       from: process.env.TWILIO_PHONE_NUMBER!,
-      statusCallback: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/status`,
+      statusCallback: `${webhookUrl}/api/call/status`,
       statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed'],
       statusCallbackMethod: 'POST',
       record: true,
-      recordingStatusCallback: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/call/recording`,
+      recordingStatusCallback: `${webhookUrl}/api/call/recording`,
       recordingStatusCallbackEvent: ['completed']
     });
 
