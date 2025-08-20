@@ -120,7 +120,7 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
   const [conversationState, setConversationState] = useState<'waiting' | 'active' | 'ended'>('waiting');
   const [callLog, setCallLog] = useState<string[]>([]);
   const [customerInput, setCustomerInput] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('+918285249249');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [isCalling, setIsCalling] = useState(false);
   const [callStatus, setCallStatus] = useState<string>('');
   const [activeCall, setActiveCall] = useState<any>(null);
@@ -314,7 +314,7 @@ function VoiceAgentInterface({ roomInstance }: { roomInstance: Room }) {
                 type="text"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="+918285249249 (Your number)"
+                placeholder="Enter phone number (e.g., +1234567890)"
                 className="flex-1 px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
               <button
