@@ -43,6 +43,10 @@ cd riverline-assignment
 yarn install
 ```
 
+```bash
+ngrok http 3000
+```
+
 ### 2. Configure Twilio and Anthropic
 
 1. **Twilio Setup**:
