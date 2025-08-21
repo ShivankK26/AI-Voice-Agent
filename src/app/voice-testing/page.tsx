@@ -165,207 +165,208 @@ export default function VoiceTestingDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Voice Agent Testing Platform</h1>
-              <p className="text-gray-600">Real voice conversation testing and analysis</p>
-            </div>
-            <div className="flex space-x-4">
-              <button
-                onClick={generatePersonas}
-                disabled={isRunning}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-              >
-                Generate Personas
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                   <div className="min-h-screen bg-gray-50">
+                 {/* Header */}
+                 <div className="bg-white shadow-sm border-b">
+                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                     <div className="flex justify-between items-center py-6">
+                       <div>
+                         <h1 className="text-3xl font-bold text-black">Voice Agent Testing Platform</h1>
+                         <p className="text-gray-700 font-medium">Real voice conversation testing and analysis</p>
+                       </div>
+                       <div className="flex space-x-4">
+                         <button
+                           onClick={generatePersonas}
+                           disabled={isRunning}
+                           className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 shadow-md"
+                         >
+                           Generate Personas
+                         </button>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Configuration Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Voice Test Configuration</h2>
+                                 <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                       <h2 className="text-xl font-bold text-black mb-6">Voice Test Configuration</h2>
               
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="+1234567890"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                                           <div>
+                             <label className="block text-sm font-bold text-black mb-2">
+                               Phone Number
+                             </label>
+                             <input
+                               type="text"
+                               value={phoneNumber}
+                               onChange={(e) => setPhoneNumber(e.target.value)}
+                               placeholder="+1234567890"
+                               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black font-medium"
+                             />
+                           </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Test Duration (seconds)
-                  </label>
-                        <input
+                                           <div>
+                             <label className="block text-sm font-bold text-black mb-2">
+                               Test Duration (seconds)
+                             </label>
+                             <input
                                type="number"
                                value={testDuration}
                                onChange={(e) => setTestDuration(parseInt(e.target.value))}
-                               className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black font-medium"
                                min="120"
                                max="300"
                              />
-                </div>
+                           </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Select Persona
-                  </label>
-                  <select
-                    value={selectedPersona?.id || ''}
-                    onChange={(e) => {
-                      const persona = personas.find(p => p.id === e.target.value);
-                      setSelectedPersona(persona || null);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select a persona...</option>
-                    {personas.map(persona => (
-                      <option key={persona.id} value={persona.id}>
-                        {persona.name} ({persona.age}, {persona.occupation})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                                           <div>
+                             <label className="block text-sm font-bold text-black mb-2">
+                               Select Persona
+                             </label>
+                             <select
+                               value={selectedPersona?.id || ''}
+                               onChange={(e) => {
+                                 const persona = personas.find(p => p.id === e.target.value);
+                                 setSelectedPersona(persona || null);
+                               }}
+                               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black font-medium"
+                             >
+                               <option value="">Select a persona...</option>
+                               {personas.map(persona => (
+                                 <option key={persona.id} value={persona.id}>
+                                   {persona.name} ({persona.age}, {persona.occupation})
+                                 </option>
+                               ))}
+                             </select>
+                           </div>
 
-                <div className="space-y-2">
-                  <button
-                    onClick={runVoiceTest}
-                    disabled={isRunning || !selectedPersona || !phoneNumber}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {isRunning ? 'Running Test...' : 'Test Single Persona'}
-                  </button>
-                  
-                  <button
-                    onClick={runBatchVoiceTests}
-                    disabled={isRunning || personas.length === 0 || !phoneNumber}
-                    className="w-full px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
-                  >
-                    {isRunning ? 'Running Batch Tests...' : 'Test All Personas'}
-                  </button>
-                </div>
+                                           <div className="space-y-3">
+                             <button
+                               onClick={runVoiceTest}
+                               disabled={isRunning || !selectedPersona || !phoneNumber}
+                               className="w-full px-6 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 disabled:opacity-50 shadow-md text-lg"
+                             >
+                               {isRunning ? 'Running Test...' : 'Test Single Persona'}
+                             </button>
+
+                             <button
+                               onClick={runBatchVoiceTests}
+                               disabled={isRunning || personas.length === 0 || !phoneNumber}
+                               className="w-full px-6 py-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 disabled:opacity-50 shadow-md text-lg"
+                             >
+                               {isRunning ? 'Running Batch Tests...' : 'Test All Personas'}
+                             </button>
+                           </div>
               </div>
             </div>
 
-            {/* Personas List */}
-            {personas.length > 0 && (
-              <div className="bg-white rounded-lg shadow p-6 mt-6">
-                <h3 className="text-lg font-semibold mb-4">Available Personas</h3>
-                <div className="space-y-3">
-                  {personas.map(persona => (
-                    <div key={persona.id} className="border rounded-lg p-3">
-                      <div className="font-medium">{persona.name}</div>
-                      <div className="text-sm text-gray-600">{persona.age} years, {persona.occupation}</div>
-                      <div className="text-sm text-gray-500">{persona.personality}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                                   {/* Personas List */}
+                       {personas.length > 0 && (
+                         <div className="bg-white rounded-lg shadow-lg p-6 mt-6 border border-gray-200">
+                           <h3 className="text-lg font-bold text-black mb-4">Available Personas</h3>
+                           <div className="space-y-3">
+                             {personas.map(persona => (
+                               <div key={persona.id} className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                                 <div className="font-bold text-black text-lg">{persona.name}</div>
+                                 <div className="text-sm font-medium text-gray-700">{persona.age} years, {persona.occupation}</div>
+                                 <div className="text-sm text-gray-600 mt-1">{persona.personality}</div>
+                               </div>
+                             ))}
+                           </div>
+                         </div>
+                       )}
           </div>
 
-          {/* Results Panel */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Voice Test Results</h2>
+                               {/* Results Panel */}
+                     <div className="lg:col-span-2">
+                       <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                         <h2 className="text-xl font-bold text-black mb-6">Voice Test Results</h2>
               
               {testResults.length > 0 ? (
-                <div className="space-y-6">
-                  {testResults.map((result, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-medium">{result.personaName}</h3>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-blue-600">{result.metrics.overallScore.toFixed(1)}/100</div>
-                          <div className="text-sm text-gray-500">{result.testDuration.toFixed(1)}s</div>
-                        </div>
-                      </div>
+                                           <div className="space-y-6">
+                             {testResults.map((result, index) => (
+                               <div key={index} className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
+                                 <div className="flex justify-between items-center mb-4">
+                                   <h3 className="text-xl font-bold text-black">{result.personaName}</h3>
+                                   <div className="text-right">
+                                     <div className="text-3xl font-bold text-blue-600">{result.metrics.overallScore.toFixed(1)}/100</div>
+                                     <div className="text-sm font-medium text-gray-600">{result.testDuration.toFixed(1)}s</div>
+                                   </div>
+                                 </div>
                       
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <div>
-                          <div className="text-sm text-gray-600">Repetition</div>
-                          <div className="font-medium">{result.metrics.repetitionScore.toFixed(1)}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-600">Negotiation</div>
-                          <div className="font-medium">{result.metrics.negotiationScore.toFixed(1)}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-600">Relevance</div>
-                          <div className="font-medium">{result.metrics.relevanceScore.toFixed(1)}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-600">Empathy</div>
-                          <div className="font-medium">{result.metrics.empathyScore.toFixed(1)}</div>
-                        </div>
-                      </div>
+                                                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                   <div className="bg-white p-3 rounded-lg border border-gray-200">
+                                     <div className="text-sm font-bold text-gray-700">Repetition</div>
+                                     <div className="font-bold text-lg text-black">{result.metrics.repetitionScore.toFixed(1)}</div>
+                                   </div>
+                                   <div className="bg-white p-3 rounded-lg border border-gray-200">
+                                     <div className="text-sm font-bold text-gray-700">Negotiation</div>
+                                     <div className="font-bold text-lg text-black">{result.metrics.negotiationScore.toFixed(1)}</div>
+                                   </div>
+                                   <div className="bg-white p-3 rounded-lg border border-gray-200">
+                                     <div className="text-sm font-bold text-gray-700">Relevance</div>
+                                     <div className="font-bold text-lg text-black">{result.metrics.relevanceScore.toFixed(1)}</div>
+                                   </div>
+                                   <div className="bg-white p-3 rounded-lg border border-gray-200">
+                                     <div className="text-sm font-bold text-gray-700">Empathy</div>
+                                     <div className="font-bold text-lg text-black">{result.metrics.empathyScore.toFixed(1)}</div>
+                                   </div>
+                                 </div>
                       
-                      {result.issues.length > 0 && (
-                        <div className="mb-3">
-                          <div className="text-sm font-medium text-red-600 mb-1">Issues Found:</div>
-                          <ul className="text-sm text-gray-600 list-disc list-inside">
-                            {result.issues.map((issue, i) => (
-                              <li key={i}>{issue}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {result.recommendations.length > 0 && (
-                        <div>
-                          <div className="text-sm font-medium text-green-600 mb-1">Recommendations:</div>
-                          <ul className="text-sm text-gray-600 list-disc list-inside">
-                            {result.recommendations.map((rec, i) => (
-                              <li key={i}>{rec}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                                                       {result.issues.length > 0 && (
+                                   <div className="mb-4">
+                                     <div className="text-sm font-bold text-red-600 mb-2">Issues Found:</div>
+                                     <ul className="text-sm text-black list-disc list-inside space-y-1">
+                                       {result.issues.map((issue, i) => (
+                                         <li key={i} className="font-medium">{issue}</li>
+                                       ))}
+                                     </ul>
+                                   </div>
+                                 )}
+
+                                 {result.recommendations.length > 0 && (
+                                   <div>
+                                     <div className="text-sm font-bold text-green-600 mb-2">Recommendations:</div>
+                                     <ul className="text-sm text-black list-disc list-inside space-y-1">
+                                       {result.recommendations.map((rec, i) => (
+                                         <li key={i} className="font-medium">{rec}</li>
+                                       ))}
+                                     </ul>
+                                   </div>
+                                 )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <div className="text-4xl mb-4">🎤</div>
-                  <p>No voice test results yet. Start a test to see real voice conversation analysis.</p>
-                </div>
-              )}
+                                       ) : (
+                           <div className="text-center py-12 text-gray-600">
+                             <div className="text-6xl mb-4">🎤</div>
+                             <p className="text-lg font-medium text-black">No voice test results yet.</p>
+                             <p className="text-gray-600">Start a test to see real voice conversation analysis.</p>
+                           </div>
+                         )}
             </div>
           </div>
         </div>
 
-        {/* Logs Panel */}
-        <div className="mt-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Test Logs</h2>
-            <div className="bg-gray-900 text-green-400 rounded-lg p-4 h-64 overflow-y-auto font-mono text-sm">
-              {logs.length === 0 ? (
-                <div className="text-gray-500">No logs yet. Start a voice test to see real-time progress.</div>
-              ) : (
-                logs.map((log, index) => (
-                  <div key={index} className="mb-1">{log}</div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
+                           {/* Logs Panel */}
+                   <div className="mt-8">
+                     <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                       <h2 className="text-xl font-bold text-black mb-4">Test Logs</h2>
+                       <div className="bg-gray-900 text-green-400 rounded-lg p-4 h-64 overflow-y-auto font-mono text-sm border-2 border-gray-700">
+                         {logs.length === 0 ? (
+                           <div className="text-gray-400 font-medium">No logs yet. Start a voice test to see real-time progress.</div>
+                         ) : (
+                           logs.map((log, index) => (
+                             <div key={index} className="mb-1">{log}</div>
+                           ))
+                         )}
+                       </div>
+                     </div>
+                   </div>
       </div>
     </div>
   );
