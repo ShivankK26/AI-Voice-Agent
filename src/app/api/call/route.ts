@@ -27,8 +27,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a unique room name for this call
-    const callRoomName = roomName || `debt-collection-${Date.now()}`;
+    console.log('📞 INITIATING CALL TO:', phoneNumber);
     
     // Create TwiML for the call
     const twiml = new twilio.twiml.VoiceResponse();
@@ -39,17 +38,13 @@ export async function POST(req: NextRequest) {
       language: 'en-US'
     }, 'Hello, this is Sarah from First National Bank. I am calling regarding your overdue credit card payment of $1,250.00. May I speak with you?');
     
-    // Use Gather to collect user input and create interactive conversation
-    const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
-    console.log('🔗 Webhook URL:', `${webhookUrl}/api/call/interactive`);
-    
+    // Use Gather to collect user input
     const gather = twiml.gather({
       input: ['speech'],
       timeout: 10,
       speechTimeout: 'auto',
-      action: `${webhookUrl}/api/call/interactive`,
-      method: 'POST',
-      actionOnEmptyResult: true
+      action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+      method: 'POST'
     });
     
     // Fallback if no input is received
@@ -64,29 +59,32 @@ export async function POST(req: NextRequest) {
       language: 'en-US'
     }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
 
+    console.log('🔗 WEBHOOK URL: https://b2048dbae7ec.ngrok-free.app/api/call/interactive');
+
     // Make the outbound call using Twilio
     const call = await client.calls.create({
       twiml: twiml.toString(),
       to: phoneNumber,
-      from: process.env.TWILIO_PHONE_NUMBER!,
-      statusCallback: `${webhookUrl}/api/call/status`,
-      statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed'],
-      statusCallbackMethod: 'POST',
-      record: true,
-      recordingStatusCallback: `${webhookUrl}/api/call/recording`,
-      recordingStatusCallbackEvent: ['completed']
+      from: process.env.TWILIO_PHONE_NUMBER!
+    });
+
+    console.log('✅ CALL INITIATED SUCCESSFULLY:', {
+      callSid: call.sid,
+      status: call.status,
+      to: phoneNumber,
+      from: process.env.TWILIO_PHONE_NUMBER
     });
 
     return NextResponse.json({
       success: true,
       callSid: call.sid,
-      roomName: callRoomName,
+      roomName: roomName || `debt-collection-${Date.now()}`,
       status: call.status,
       message: `Call initiated to ${phoneNumber}`
     });
 
   } catch (error) {
-    console.error('Error making outbound call:', error);
+    console.error('💥 ERROR MAKING CALL:', error);
     return NextResponse.json(
       { error: 'Failed to initiate call', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

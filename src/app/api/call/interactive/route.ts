@@ -7,18 +7,18 @@ const anthropic = new Anthropic({
 });
 
 export async function POST(req: NextRequest) {
+  console.log('🎤 INTERACTIVE WEBHOOK RECEIVED');
+  
   try {
     const formData = await req.formData();
     const speechResult = formData.get('SpeechResult') as string;
     const confidence = formData.get('Confidence') as string;
     const callSid = formData.get('CallSid') as string;
-    const callStatus = formData.get('CallStatus') as string;
 
-    console.log('🎤 SPEECH RECEIVED:', {
+    console.log('📝 SPEECH DATA:', {
       speechResult,
       confidence,
       callSid,
-      callStatus,
       timestamp: new Date().toISOString()
     });
 
@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
     const twiml = new twilio.twiml.VoiceResponse();
 
     if (speechResult && parseFloat(confidence) > 0.3) {
-      // User spoke and we understood them (lowered confidence threshold)
+      // User spoke and we understood them
+      console.log('✅ Speech detected:', speechResult);
+      
       try {
         // Get AI response from Claude
         const response = await anthropic.messages.create({
@@ -51,66 +53,77 @@ export async function POST(req: NextRequest) {
           voice: 'alice',
           language: 'en-US'
         }, aiResponse);
-
-        // Continue the conversation
-        const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
+        
+        // Continue conversation
         const gather = twiml.gather({
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: `${webhookUrl}/api/call/interactive`,
-          method: 'POST',
-          actionOnEmptyResult: true
+          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          method: 'POST'
         });
 
         gather.say({
           voice: 'alice',
           language: 'en-US'
-        }, 'Please let me know if you have any questions about payment arrangements.');
-
-        // End call if no response
-        twiml.say({
-          voice: 'alice',
-          language: 'en-US'
-        }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
+        }, 'Please let me know your preference for payment arrangements.');
 
       } catch (aiError) {
-        console.error('AI Error:', aiError);
+        console.error('🤖 AI ERROR:', aiError);
+        
+        // Fallback response if AI fails
         twiml.say({
           voice: 'alice',
           language: 'en-US'
-        }, 'I apologize for the technical difficulties. Please call us back later. Thank you.');
+        }, 'I understand you said: ' + speechResult + '. Let me help you with payment options for your outstanding balance of $1,250.00. We can arrange for a full payment or set up a payment plan. What would you prefer?');
+        
+        // Continue conversation
+        const gather = twiml.gather({
+          input: ['speech'],
+          timeout: 8,
+          speechTimeout: 'auto',
+          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          method: 'POST'
+        });
+
+        gather.say({
+          voice: 'alice',
+          language: 'en-US'
+        }, 'Please let me know your preference for payment arrangements.');
       }
+
     } else {
-      // No speech detected or low confidence
+      // No speech detected
+      console.log('❌ No speech detected or low confidence');
+      
       twiml.say({
         voice: 'alice',
         language: 'en-US'
-      }, 'I didn\'t catch that. Could you please repeat? We have several payment options available to help you resolve your account.');
+      }, 'I didn\'t catch that clearly. You have an outstanding balance of $1,250.00. Would you like to make a full payment or set up a payment plan?');
       
-      // Try to gather input again
-      const webhookUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://19601fac91e0.ngrok-free.app';
+      // Try again
       const gather = twiml.gather({
         input: ['speech'],
         timeout: 8,
         speechTimeout: 'auto',
-        action: `${webhookUrl}/api/call/interactive`,
-        method: 'POST',
-        actionOnEmptyResult: true
+        action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+        method: 'POST'
       });
 
       gather.say({
         voice: 'alice',
         language: 'en-US'
-      }, 'Please let me know if you would like to discuss payment arrangements.');
-
-      // End call if no response
-      twiml.say({
-        voice: 'alice',
-        language: 'en-US'
-      }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
+      }, 'Please let me know how you would like to proceed.');
     }
 
+    // End call gracefully
+    twiml.say({
+      voice: 'alice',
+      language: 'en-US'
+    }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
+
+    console.log('📤 SENDING TWIML RESPONSE');
+    
     return new NextResponse(twiml.toString(), {
       headers: {
         'Content-Type': 'application/xml',
@@ -118,9 +131,9 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error in interactive call:', error);
+    console.error('💥 ERROR IN INTERACTIVE CALL:', error);
     
-    // Fallback response
+    // Simple fallback response
     const twiml = new twilio.twiml.VoiceResponse();
     twiml.say({
       voice: 'alice',
