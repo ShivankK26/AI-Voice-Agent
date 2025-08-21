@@ -16,6 +16,12 @@ export default function Home() {
               <Link href="/room" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                 Voice Agent
               </Link>
+              <Link href="/testing" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                Testing Platform
+              </Link>
+              <Link href="/voice-testing" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                Voice Testing
+              </Link>
             </nav>
           </div>
         </div>
