@@ -56,7 +56,7 @@ Respond naturally as if you're having a real phone conversation. Keep your respo
 
     // Create the conversation with Anthropic
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-opus-4-1-20250805',
       max_tokens: 150,
       temperature: 0.7,
       system: systemPrompt,
