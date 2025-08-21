@@ -39,7 +39,7 @@ export default function VoiceTestingDashboard() {
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [testDuration, setTestDuration] = useState(300); // 5 minutes
+  const [testDuration, setTestDuration] = useState(120); // 2 minutes for proper analysis
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (message: string) => {
@@ -213,14 +213,14 @@ export default function VoiceTestingDashboard() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Test Duration (seconds)
                   </label>
-                  <input
-                    type="number"
-                    value={testDuration}
-                    onChange={(e) => setTestDuration(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                    min="60"
-                    max="1800"
-                  />
+                        <input
+                               type="number"
+                               value={testDuration}
+                               onChange={(e) => setTestDuration(parseInt(e.target.value))}
+                               className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                               min="120"
+                               max="300"
+                             />
                 </div>
 
                 <div>

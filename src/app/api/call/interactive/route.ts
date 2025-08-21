@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import twilio from 'twilio';
 import Anthropic from '@anthropic-ai/sdk';
+import { testTracker } from '../../../lib/test-tracker';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -8,6 +9,7 @@ const anthropic = new Anthropic({
 
 export async function POST(req: NextRequest) {
   console.log('🎤 INTERACTIVE WEBHOOK RECEIVED');
+  console.log('🔍 TestTracker import check:', typeof testTracker);
   
   try {
     const formData = await req.formData();
@@ -25,6 +27,33 @@ export async function POST(req: NextRequest) {
     
     // Store conversation data (in a real implementation, this would go to a database)
     console.log('📝 CAPTURED CONVERSATION DATA:', conversationData);
+    
+    // Store customer response in conversation log
+    if (speechResult && parseFloat(confidence) > 0.3) {
+      const customerTurn = {
+        timestamp: new Date().toISOString(),
+        speaker: 'customer' as const,
+        message: speechResult,
+        speechResult: speechResult,
+        confidence: parseFloat(confidence) || 0
+      };
+      
+          // Store in test tracker if this is a test call
+    console.log(`🔍 Checking if call ${callSid} is tracked...`);
+    console.log(`🔍 TestTracker methods available:`, {
+      isCallTracked: typeof testTracker.isCallTracked,
+      addTurnByCall: typeof testTracker.addTurnByCall
+    });
+    
+    if (testTracker.isCallTracked(callSid)) {
+      console.log(`✅ Call ${callSid} is tracked, adding customer turn`);
+      testTracker.addTurnByCall(callSid, customerTurn);
+      console.log(`📝 Added customer turn to test via call: ${callSid}`);
+    } else {
+      console.log(`❌ Call ${callSid} is NOT tracked`);
+      console.log(`🔍 Available active tests:`, testTracker.getActiveTests());
+    }
+    }
 
     console.log('📝 SPEECH DATA:', {
       speechResult,
@@ -58,6 +87,23 @@ export async function POST(req: NextRequest) {
         const aiResponse = response.content[0]?.type === 'text' ? response.content[0].text : 'I understand. Let me help you with payment options.';
 
         console.log('🤖 AI RESPONSE:', aiResponse);
+
+        // Store agent response in conversation log
+        const agentTurn = {
+          timestamp: new Date().toISOString(),
+          speaker: 'agent' as const,
+          message: aiResponse
+        };
+        
+        // Store in test tracker if this is a test call
+        console.log(`🔍 Checking if call ${callSid} is tracked for agent response...`);
+        if (testTracker.isCallTracked(callSid)) {
+          console.log(`✅ Call ${callSid} is tracked, adding agent turn`);
+          testTracker.addTurnByCall(callSid, agentTurn);
+          console.log(`📝 Added agent turn to test via call: ${callSid}`);
+        } else {
+          console.log(`❌ Call ${callSid} is NOT tracked for agent response`);
+        }
 
         // Speak the AI response
         twiml.say({
