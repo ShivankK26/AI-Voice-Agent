@@ -14,6 +14,17 @@ export async function POST(req: NextRequest) {
     const speechResult = formData.get('SpeechResult') as string;
     const confidence = formData.get('Confidence') as string;
     const callSid = formData.get('CallSid') as string;
+    
+    // Capture conversation data for testing
+    const conversationData = {
+      timestamp: new Date().toISOString(),
+      callSid,
+      speechResult,
+      confidence: parseFloat(confidence) || 0
+    };
+    
+    // Store conversation data (in a real implementation, this would go to a database)
+    console.log('📝 CAPTURED CONVERSATION DATA:', conversationData);
 
     console.log('📝 SPEECH DATA:', {
       speechResult,
