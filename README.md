@@ -1,223 +1,278 @@
-# Riverline Voice Agent - Debt Collection AI
+# Voice Agent Testing Platform
 
-A sophisticated AI-powered debt collection voice agent built with LiveKit, Next.js, and modern web technologies. This application demonstrates how to create human-like voice interactions for debt collection scenarios.
+A sophisticated AI-powered voice agent testing and self-improvement platform built with Next.js, Twilio, and Anthropic Claude. This application enables automated testing of voice agents using real phone calls, comprehensive analysis, and AI-driven script improvement.
 
-## Features
+## 🚀 Features
 
-- 🤖 **Claude AI-Powered**: Real-time conversations using Anthropic's Claude 3.5 Sonnet
-- 🎯 **Debt Collection Focus**: Specialized for payment reminders and collection scenarios
-- 📞 **Real Outbound Phone Calls**: Actually dials customers using Twilio
-- 🧠 **Intelligent Responses**: Dynamic, context-aware conversations with speech recognition
-- 🛡️ **Robust Error Handling**: Handles edge cases, interruptions, and unexpected responses
-- 📊 **Call Analytics**: Real-time call logging, recording, and status tracking
-- 🎨 **Modern UI**: Clean, professional interface with real-time status updates
-- 📱 **International Phone Support**: Works with international phone numbers for outbound calls
-- 🎤 **Interactive Voice**: Real-time speech recognition and AI responses
+### 🤖 **AI-Powered Voice Agent**
+- **Claude Opus 4.1**: Advanced AI model for natural voice conversations
+- **Real Phone Calls**: Actually dials customers using Twilio Programmable Voice
+- **Speech Recognition**: Real-time speech-to-text with confidence scoring
+- **Dynamic Responses**: Context-aware, natural conversation flow
+- **Professional Scripts**: Specialized for debt collection scenarios
 
-## Tech Stack
+### 🧪 **Automated Testing Platform**
+- **Persona Generation**: AI-generated diverse customer profiles for testing
+- **Real Voice Testing**: Actual phone calls with real customers
+- **Comprehensive Metrics**: 5-dimensional performance scoring
+- **Batch Testing**: Run multiple tests with different personas
+- **Conversation Tracking**: Full conversation logging and analysis
 
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **AI/LLM**: Anthropic Claude 3.5 Sonnet
-- **Voice Communication**: LiveKit + Twilio SIP
-- **Phone Calls**: Twilio Programmable Voice
-- **Styling**: Tailwind CSS
-- **State Management**: React Hooks
-- **Authentication**: LiveKit Access Tokens
+### 📊 **Performance Analytics**
+- **Repetition Score**: Measures agent's tendency to repeat responses
+- **Negotiation Score**: Evaluates flexibility and payment option variety
+- **Relevance Score**: Assesses response appropriateness to customer input
+- **Empathy Score**: Measures emotional intelligence and understanding
+- **Overall Score**: Composite performance metric (0-100)
 
-## Prerequisites
+### 🔄 **Self-Improvement System**
+- **AI-Driven Analysis**: Identifies failure points and improvement areas
+- **Script Rewriting**: Automatically generates improved agent scripts
+- **Iterative Testing**: Continuous improvement through multiple iterations
+- **Performance Tracking**: Monitors score improvements over time
+- **Script Persistence**: Maintains improved scripts across sessions
 
-Before running this application, you'll need:
+### 🛠️ **Developer Experience**
+- **Real-time Logging**: Comprehensive console logging for debugging
+- **Error Handling**: Robust error handling with fallback responses
+- **Webhook Management**: Dynamic ngrok URL handling for local development
+- **State Persistence**: localStorage for script and test data persistence
+- **Modern UI**: Clean, responsive interface with Tailwind CSS
 
-1. **Twilio Account**: Sign up at [twilio.com](https://www.twilio.com/)
-2. **Anthropic Account**: Sign up at [console.anthropic.com](https://console.anthropic.com/)
-3. **Twilio Phone Number**: Required for outbound calls (purchase through Twilio)
-4. **Node.js**: Version 18 or higher
-5. **Yarn**: Package manager
+## 🏗️ Tech Stack
 
-## Setup Instructions
+### **Frontend**
+- **Next.js 15**: React framework with App Router
+- **React 19**: Latest React with hooks and modern patterns
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework
 
-### 1. Clone and Install Dependencies
+### **Backend & APIs**
+- **Next.js API Routes**: Serverless API endpoints
+- **Anthropic Claude**: AI model for conversations and analysis
+- **Twilio Programmable Voice**: Phone call infrastructure
+- **TwiML**: Twilio Markup Language for call control
+
+### **Development Tools**
+- **ngrok**: Local tunnel for webhook testing
+- **ESLint**: Code linting and formatting
+- **Yarn**: Package management
+
+## 📋 Prerequisites
+
+Before running this application, ensure you have:
+
+1. **Node.js**: Version 18 or higher
+2. **Yarn**: Package manager
+3. **Twilio Account**: [Sign up here](https://www.twilio.com/)
+4. **Anthropic Account**: [Sign up here](https://console.anthropic.com/)
+5. **ngrok**: [Download here](https://ngrok.com/)
+
+## 🚀 Quick Start
+
+### 1. Clone and Install
 
 ```bash
-cd riverline-assignment
+git clone https://github.com/ShivankK26/AI-Voice-Agent .
 yarn install
 ```
 
-```bash
-ngrok http 3000
-```
+### 2. Environment Setup
 
-### 2. Configure Twilio and Anthropic
-
-1. **Twilio Setup**:
-   - Go to [Twilio Console](https://console.twilio.com/) and get your credentials
-   - Purchase a phone number with Voice capabilities
-   - Configure webhook URLs for call status updates
-
-2. **Anthropic Setup**:
-   - Go to [Anthropic Console](https://console.anthropic.com/) and get your API key
-   - Ensure you have access to Claude 3.5 Sonnet
-
-3. **Update Environment Variables**:
+Create a `.env.local` file in the root directory:
 
 ```env
 # Twilio Configuration
-TWILIO_PHONE_NUMBER=+1XXXXXXXXXX  # Your Twilio outbound number
+TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
 ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Anthropic AI Configuration
 ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# Base URL for webhooks (use ngrok for local testing)
+# Base URL (update with your ngrok URL)
 NEXT_PUBLIC_BASE_URL=https://your-ngrok-url.ngrok-free.app
 ```
 
-### 3. Run the Development Server
+### 3. Start Development Server
 
 ```bash
+# Terminal 1: Start Next.js
 yarn dev
+
+# Terminal 2: Start ngrok tunnel
+ngrok http 3000
 ```
 
-The application will be available at `http://localhost:3000`
+### 4. Configure Twilio Webhooks
 
-## Usage
+1. Go to [Twilio Console](https://console.twilio.com/)
+2. Navigate to Phone Numbers → Manage → Active numbers
+3. Click on your phone number
+4. Set the webhook URL to: `https://your-ngrok-url.ngrok-free.app/api/call/interactive`
+5. Set HTTP method to POST
 
-### Demo Scenario
+## 📖 Detailed Usage Guide
 
-The voice agent is configured for a debt collection scenario:
+### 🎭 **Generating Test Personas**
 
-1. **Credit Card Payment Reminder**: Agent contacts customers about overdue balances
-2. **Professional Conversation**: Polite and professional tone throughout
-3. **Objection Handling**: Responds to common customer objections
-4. **Payment Options**: Offers various payment arrangements
-5. **Call Logging**: Tracks all conversation activities
+1. Navigate to `/voice-testing`
+2. Click **"Generate Personas"**
+3. The system creates 5 diverse customer profiles:
+   - Different ages, occupations, and personalities
+   - Various financial situations and payment capabilities
+   - Realistic debt collection scenarios
 
-### How to Test
+### 🎤 **Running Voice Tests**
 
-1. **Setup Complete Integration**:
-   - Ensure all environment variables are configured
-   - Start ngrok: `ngrok http 3000`
-   - Update `NEXT_PUBLIC_BASE_URL` with your ngrok URL
+#### Single Test
+1. **Select a Persona**: Choose from generated personas
+2. **Enter Phone Number**: Use format `+[country code][number]`
+3. **Set Test Duration**: 120-300 seconds (default: 120s)
+4. **Click "Run Voice Test"**
+5. **Monitor Progress**: Watch real-time conversation logs
+6. **Review Results**: See detailed metrics and analysis
 
-2. **Test Real Phone Calls**:
-   - Navigate to the voice agent interface
-   - Enter an international phone number in format `+[country code][number]`
-   - Click "📞 Call" to make a real outbound call
-   - Monitor call status and logs in real-time
+#### Batch Testing
+1. **Generate Personas** first
+2. **Enter Phone Number** for testing
+3. **Click "Run Batch Tests"**
+4. **Monitor All Tests**: System runs tests sequentially
+5. **Review Comprehensive Results**: Compare performance across personas
 
-3. **Monitor Calls**:
-   - Check call logs for status updates
-   - Monitor Twilio console for call details
-   - View real-time conversation with Claude AI
+### 📊 **Understanding Test Results**
 
-## Project Structure
+#### Metrics Breakdown
+- **Repetition Score (0-100)**: Lower is better
+- **Negotiation Score (0-100)**: Higher is better
+- **Relevance Score (0-100)**: Higher is better
+- **Empathy Score (0-100)**: Higher is better
+- **Overall Score (0-100)**: Weighted average
+
+#### Analysis Components
+- **Issues Found**: Specific problems identified
+- **Recommendations**: Actionable improvement suggestions
+- **Conversation Summary**: Key interaction points
+- **Performance Insights**: Detailed breakdown
+
+### 🔄 **Self-Improvement Process**
+
+#### Automatic Script Improvement
+1. **Run Voice Tests**: Generate test results first
+2. **Click "Improve Agent Script"**
+3. **AI Analysis**: System analyzes all test results
+4. **Script Generation**: Creates improved agent script
+5. **Persistence**: Script saved to localStorage
+6. **Iterative Testing**: Run new tests with improved script
+
+#### Improvement Features
+- **Issue Identification**: Finds common failure points
+- **Script Enhancement**: Addresses specific problems
+- **Performance Prediction**: Estimates score improvements
+- **Change Tracking**: Logs all improvements made
+
+## 🏗️ Project Structure
 
 ```
 src/
 ├── app/
 │   ├── api/
+│   │   ├── ai/
+│   │   │   └── conversation/
+│   │   │       └── route.ts          # AI conversation handling
+│   │   ├── call/
+│   │   │   ├── interactive/
+│   │   │   │   └── route.ts          # Twilio interactive webhook
+│   │   │   ├── recording/
+│   │   │   │   └── route.ts          # Call recording webhook
+│   │   │   ├── status/
+│   │   │   │   └── route.ts          # Call status webhook
+│   │   │   └── route.ts              # Call initiation
+│   │   ├── testing/
+│   │   │   ├── generate-personas/
+│   │   │   │   └── route.ts          # AI persona generation
+│   │   │   ├── self-correct/
+│   │   │   │   └── route.ts          # Script improvement
+│   │   │   └── voice-test/
+│   │   │       └── route.ts          # Voice test orchestration
 │   │   └── token/
-│   │       └── route.ts          # LiveKit token generation
+│   │       └── route.ts              # LiveKit token generation
 │   ├── room/
-│   │   └── page.tsx              # Voice agent interface
-│   ├── globals.css               # Global styles
-│   ├── layout.tsx                # Root layout
-│   └── page.tsx                  # Landing page
-├── components/                   # Reusable components (future)
-└── lib/                         # Utility functions (future)
+│   │   └── page.tsx                  # Voice agent interface
+│   ├── voice-testing/
+│   │   └── page.tsx                  # Testing platform UI
+│   ├── globals.css                   # Global styles
+│   ├── layout.tsx                    # Root layout
+│   └── page.tsx                      # Landing page
+├── components/
+│   └── AnthropicDebtCollectionAgent.tsx
+├── lib/
+│   └── test-tracker.ts               # Conversation tracking
+└── types/                           # TypeScript definitions
 ```
 
-## API Endpoints
+## 🔧 API Endpoints
 
-### `/api/token`
-Generates LiveKit access tokens for room authentication.
+### **Voice Agent APIs**
 
-**Query Parameters:**
-- `room`: Room name for the voice session
-- `username`: User identity for the session
+#### `POST /api/call`
+Initiates outbound phone calls.
 
-**Response:**
+**Request Body:**
 ```json
 {
-  "token": "livekit_access_token_jwt"
+  "phoneNumber": "+1234567890",
+  "customerName": "John Doe",
+  "amount": "$1,250.00",
+  "roomName": "test-room",
+  "script": "Custom agent script..."
 }
 ```
 
-## Environment Variables
+#### `POST /api/call/interactive`
+Handles Twilio interactive webhooks for speech recognition.
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `LIVEKIT_API_KEY` | LiveKit API Key | Yes |
-| `LIVEKIT_API_SECRET` | LiveKit API Secret | Yes |
-| `LIVEKIT_URL` | LiveKit WebSocket URL | Yes |
-| `NEXT_PUBLIC_LIVEKIT_URL` | Public LiveKit URL for client | Yes |
+**Query Parameters:**
+- `script`: URL-encoded agent script
 
-## Development
+### **Testing APIs**
 
-### Available Scripts
+#### `POST /api/testing/generate-personas`
+Generates diverse customer personas for testing.
 
-- `yarn dev` - Start development server
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn lint` - Run ESLint
+**Request Body:**
+```json
+{
+  "count": 5
+}
+```
 
-### Adding New Features
+#### `POST /api/testing/voice-test`
+Orchestrates a complete voice test.
 
-1. **Voice Agent Logic**: Extend the `VoiceAgentInterface` component
-2. **New Scenarios**: Create additional conversation flows
-3. **Analytics**: Add more detailed call tracking
-4. **UI Components**: Build reusable components in `src/components/`
+**Request Body:**
+```json
+{
+  "persona": {
+    "name": "John Doe",
+    "age": 35,
+    "occupation": "Teacher",
+    "personality": "Cooperative"
+  },
+  "phoneNumber": "+1234567890",
+  "testDuration": 120,
+  "script": "Agent script..."
+}
+```
 
-## Deployment
+#### `POST /api/testing/self-correct`
+Analyzes test results and generates improved scripts.
 
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
-
-### Other Platforms
-
-The application can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-
-## Security Considerations
-
-- Never commit `.env.local` to version control
-- Use environment variables for all sensitive data
-- Implement proper authentication for production use
-- Consider rate limiting for the token API endpoint
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Connection Failed**: Check LiveKit credentials in `.env.local`
-2. **Token Generation Error**: Verify API key and secret are correct
-3. **Audio Not Working**: Ensure browser permissions for microphone
-4. **Build Errors**: Check Node.js version compatibility
-
-### Getting Help
-
-- [LiveKit Documentation](https://docs.livekit.io/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [LiveKit Community](https://github.com/livekit/livekit/discussions)
-
-## License
-
-This project is created for the Riverline Hiring Assignment.
-
-## Contributing
-
-This is a demonstration project for the Riverline hiring process. For production use, consider:
-
-- Adding comprehensive error handling
-- Implementing proper logging
-- Adding unit and integration tests
-- Setting up CI/CD pipelines
-- Adding monitoring and analytics
+**Request Body:**
+```json
+{
+  "testResults": [...],
+  "currentScript": "Current script...",
+  "iteration": 1
+}
+```
