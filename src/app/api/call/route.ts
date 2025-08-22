@@ -33,7 +33,13 @@ export async function POST(req: NextRequest) {
     const twiml = new twilio.twiml.VoiceResponse();
 
     // Use custom script if provided, otherwise use default
-    const agentScript = script || 'You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don\'t be too pushy, but be firm about the payment.';
+    let agentScript = script || 'You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don\'t be too pushy, but be firm about the payment.';
+    
+    // Truncate script if it's too long to avoid TwiML size limits
+    if (agentScript.length > 800) {
+      console.log('⚠️ Script too long, truncating to avoid TwiML size limits');
+      agentScript = agentScript.substring(0, 800) + '...';
+    }
 
     // Welcome message
     twiml.say({

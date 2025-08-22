@@ -41,7 +41,16 @@ export default function VoiceTestingDashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [testDuration, setTestDuration] = useState(120); // 2 minutes for proper analysis
   const [logs, setLogs] = useState<string[]>([]);
-  const [currentScript, setCurrentScript] = useState(`You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`);
+  const [currentScript, setCurrentScript] = useState(() => {
+    // Try to load saved script from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('improvedAgentScript');
+      if (saved) {
+        return saved;
+      }
+    }
+    return `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`;
+  });
   const [isImproving, setIsImproving] = useState(false);
   const [showImprovementToast, setShowImprovementToast] = useState(false);
 
@@ -198,7 +207,16 @@ export default function VoiceTestingDashboard() {
       const data = await response.json();
       const improvedScript = data.result.improvedScript;
       
+      console.log('🔧 Improved script received:', improvedScript);
+      console.log('🔧 Script length:', improvedScript.length);
+      
       setCurrentScript(improvedScript);
+      
+      // Save the improved script to localStorage for persistence
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('improvedAgentScript', improvedScript);
+        addLog('💾 Script saved permanently to browser storage');
+      }
       
       addLog('✅ Agent script improved successfully!');
       addLog(`📈 Score improvement: ${data.result.previousScore.toFixed(1)} → ${data.result.newScore.toFixed(1)}`);
@@ -315,13 +333,27 @@ export default function VoiceTestingDashboard() {
                     {isRunning ? 'Running Batch Tests...' : 'Test All Personas'}
                   </button>
 
-                  <button
-                    onClick={improveAgentScript}
-                    disabled={isImproving || testResults.length === 0}
-                    className="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50 shadow-md text-lg"
-                  >
-                    {isImproving ? 'Improving Script...' : 'Improve Agent Script'}
-                  </button>
+                                               <button
+                               onClick={improveAgentScript}
+                               disabled={isImproving || testResults.length === 0}
+                               className="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50 shadow-md text-lg"
+                             >
+                               {isImproving ? 'Improving Script...' : 'Improve Agent Script'}
+                             </button>
+
+                             <button
+                               onClick={() => {
+                                 const originalScript = `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`;
+                                 setCurrentScript(originalScript);
+                                 if (typeof window !== 'undefined') {
+                                   localStorage.removeItem('improvedAgentScript');
+                                 }
+                                 addLog('🔄 Reset to original script');
+                               }}
+                               className="w-full px-6 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 shadow-md text-lg"
+                             >
+                               Reset to Original Script
+                             </button>
                 </div>
               </div>
             </div>

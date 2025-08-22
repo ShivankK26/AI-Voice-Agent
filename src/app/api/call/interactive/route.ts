@@ -13,7 +13,14 @@ export async function POST(req: NextRequest) {
   
   // Get the script from URL parameters
   const { searchParams } = new URL(req.url);
-  const script = searchParams.get('script');
+  let script = searchParams.get('script');
+  
+  // Truncate script if it's too long to avoid TwiML size limits
+  if (script && script.length > 800) {
+    console.log('⚠️ Script too long, truncating to avoid TwiML size limits');
+    script = script.substring(0, 800) + '...';
+  }
+  
   console.log('📝 Script received:', script ? 'Custom script' : 'Default script');
   
   try {

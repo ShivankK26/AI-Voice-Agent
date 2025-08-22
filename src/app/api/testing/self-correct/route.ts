@@ -28,12 +28,15 @@ export async function POST(req: NextRequest) {
     // Generate an improved script based on the analysis
     const improvedScript = await generateImprovedScript(analysis, currentScript, iteration);
     
+    // Get the most recent test score for accurate comparison
+    const mostRecentScore = testResults.length > 0 ? testResults[testResults.length - 1].metrics.overallScore : analysis.averageScore;
+    
     // Simulate what the new score might be (in a real implementation, you'd test this)
-    const estimatedNewScore = Math.min(analysis.averageScore + 15, 95); // Conservative improvement
+    const estimatedNewScore = Math.min(mostRecentScore + 15, 95); // Conservative improvement
 
     const result: SelfCorrectionResult = {
       iteration,
-      previousScore: analysis.averageScore,
+      previousScore: mostRecentScore,
       newScore: estimatedNewScore,
       improvedScript,
       changes: analysis.keyChanges,
@@ -42,7 +45,7 @@ export async function POST(req: NextRequest) {
     };
 
     console.log(`✅ Self-correction completed for iteration ${iteration}`);
-    console.log(`📈 Score improvement: ${analysis.averageScore.toFixed(1)} → ${estimatedNewScore.toFixed(1)}`);
+    console.log(`📈 Score improvement: ${mostRecentScore.toFixed(1)} → ${estimatedNewScore.toFixed(1)}`);
 
     return NextResponse.json({
       success: true,
@@ -132,32 +135,31 @@ Provide detailed analysis of patterns and specific improvements needed.`
 async function generateImprovedScript(analysis: any, currentScript: string, iteration: number): Promise<string> {
   const response = await anthropic.messages.create({
     model: 'claude-opus-4-1-20250805',
-    max_tokens: 2000,
+    max_tokens: 1000,
     temperature: 0.4,
-    system: `You are an expert script writer for debt collection agents. Generate an improved script based on test analysis.
+    system: `You are an expert script writer for debt collection agents. Generate a DETAILED but TwiML-compliant improved script based on test analysis.
 
-IMPROVEMENT GUIDELINES:
-1. Address identified issues from test results
-2. Enhance empathy and rapport building
-3. Improve negotiation and payment options
-4. Add better customer verification
-5. Include objection handling
-6. Make responses more natural and conversational
+CRITICAL REQUIREMENTS:
+1. Keep the script under 800 characters to avoid TwiML size limits
+2. Make it comprehensive and detailed
+3. Include specific conversation flow and techniques
+4. Address empathy, verification, payment options, and objection handling
+5. Provide clear guidance for different scenarios
 
-SCRIPT STRUCTURE:
-- Opening with empathy and verification
-- Gradual introduction of debt discussion
-- Multiple payment options
-- Objection handling
-- Professional closing
-
-The script should be a comprehensive system prompt that guides the AI agent's behavior throughout the conversation.
+SCRIPT FORMAT:
+- Start with empathy and rapport building
+- Include verification process
+- Detail payment options and negotiation
+- Add objection handling techniques
+- Include closing and confirmation steps
+- Use clear, actionable language
+- Keep under 800 characters total
 
 Return only the improved script text.`,
     messages: [
       {
         role: 'user',
-        content: `Generate an improved debt collection agent script based on this analysis:
+        content: `Generate a CONCISE improved debt collection agent script based on this analysis:
 
 ANALYSIS:
 - Average Score: ${analysis.averageScore}/100
@@ -170,7 +172,17 @@ ${currentScript}
 
 ITERATION: ${iteration}
 
-Create an improved script that addresses these issues and improves the agent's performance. The script should be a system prompt that will be used to guide the AI agent's responses during voice calls.`
+IMPORTANT: Create a DETAILED script under 800 characters that addresses the main issues. Include:
+
+1. EMPATHY & RAPPORT: Start with genuine concern and understanding
+2. VERIFICATION: Confirm customer identity before proceeding
+3. FINANCIAL ASSESSMENT: Understand their current situation
+4. PAYMENT OPTIONS: Offer multiple solutions (full payment, monthly plan, hardship program)
+5. NEGOTIATION: Be flexible and adapt to their needs
+6. OBJECTION HANDLING: Address common concerns professionally
+7. CONFIRMATION: Verify agreements are realistic and sustainable
+
+Make it comprehensive but stay within TwiML limits.`
       }
     ]
   });
