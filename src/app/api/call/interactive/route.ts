@@ -11,6 +11,18 @@ export async function POST(req: NextRequest) {
   console.log('🎤 INTERACTIVE WEBHOOK RECEIVED');
   console.log('🔍 TestTracker import check:', typeof testTracker);
   
+  // Get the script from URL parameters
+  const { searchParams } = new URL(req.url);
+  let script = searchParams.get('script');
+  
+  // Truncate script if it's too long to avoid TwiML size limits
+  if (script && script.length > 800) {
+    console.log('⚠️ Script too long, truncating to avoid TwiML size limits');
+    script = script.substring(0, 800) + '...';
+  }
+  
+  console.log('📝 Script received:', script ? 'Custom script' : 'Default script');
+  
   try {
     const formData = await req.formData();
     const speechResult = formData.get('SpeechResult') as string;
@@ -75,7 +87,7 @@ export async function POST(req: NextRequest) {
           model: 'claude-opus-4-1-20250805',
           max_tokens: 200,
           temperature: 0.7,
-          system: `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`,
+          system: script || `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`,
           messages: [
             {
               role: 'user',
@@ -116,7 +128,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -139,7 +151,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -163,7 +175,7 @@ export async function POST(req: NextRequest) {
         input: ['speech'],
         timeout: 8,
         speechTimeout: 'auto',
-        action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+        action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
         method: 'POST'
       });
 
