@@ -41,6 +41,18 @@ export default function VoiceTestingDashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [testDuration, setTestDuration] = useState(120); // 2 minutes for proper analysis
   const [logs, setLogs] = useState<string[]>([]);
+  const [currentScript, setCurrentScript] = useState(() => {
+    // Try to load saved script from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('improvedAgentScript');
+      if (saved) {
+        return saved;
+      }
+    }
+    return `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`;
+  });
+  const [isImproving, setIsImproving] = useState(false);
+  const [showImprovementToast, setShowImprovementToast] = useState(false);
 
   const addLog = (message: string) => {
     setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
@@ -81,6 +93,7 @@ export default function VoiceTestingDashboard() {
 
     setIsRunning(true);
     addLog(`🎤 Starting voice test with ${selectedPersona.name} on ${phoneNumber}`);
+    addLog(`📝 Using script: ${currentScript.substring(0, 100)}...`);
 
     try {
       const response = await fetch('/api/testing/voice-test', {
@@ -89,7 +102,8 @@ export default function VoiceTestingDashboard() {
         body: JSON.stringify({
           persona: selectedPersona,
           phoneNumber: phoneNumber,
-          testDuration: testDuration
+          testDuration: testDuration,
+          script: currentScript
         })
       });
 
@@ -124,6 +138,7 @@ export default function VoiceTestingDashboard() {
 
     setIsRunning(true);
     addLog(`🚀 Starting batch voice tests with ${personas.length} personas`);
+    addLog(`📝 Using script: ${currentScript.substring(0, 100)}...`);
 
     const results: VoiceTestResult[] = [];
 
@@ -137,7 +152,8 @@ export default function VoiceTestingDashboard() {
           body: JSON.stringify({
             persona: persona,
             phoneNumber: phoneNumber,
-            testDuration: testDuration
+            testDuration: testDuration,
+            script: currentScript
           })
         });
 
@@ -162,6 +178,62 @@ export default function VoiceTestingDashboard() {
     addLog(`📊 Batch testing completed! Average score: ${averageScore.toFixed(1)}/100`);
     
     setIsRunning(false);
+  };
+
+  const improveAgentScript = async () => {
+    if (testResults.length === 0) {
+      addLog('❌ No test results available for improvement');
+      return;
+    }
+
+    setIsImproving(true);
+    addLog('🔧 Starting agent script improvement...');
+
+    try {
+      const response = await fetch('/api/testing/self-correct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          testResults: testResults,
+          currentScript: currentScript,
+          iteration: 1
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to improve agent script');
+      }
+
+      const data = await response.json();
+      const improvedScript = data.improvedScript.improvedScript;
+      
+      console.log('🔧 Improved script received:', improvedScript);
+      console.log('🔧 Script length:', improvedScript.length);
+      
+      setCurrentScript(improvedScript);
+      
+      // Save the improved script to localStorage for persistence
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('improvedAgentScript', improvedScript);
+        addLog('💾 Script saved permanently to browser storage');
+      }
+      
+      addLog('✅ Agent script improved successfully!');
+      addLog(`📈 Expected score improvement: ${data.improvedScript.expectedMetrics.overallScore.toFixed(1)}/100`);
+      addLog('🔧 Key improvements made:');
+      data.improvedScript.improvements.forEach((improvement: string) => {
+        addLog(`   • ${improvement}`);
+      });
+      
+      // Show improvement toast
+      setShowImprovementToast(true);
+      setTimeout(() => setShowImprovementToast(false), 5000);
+
+    } catch (error) {
+      addLog(`❌ Error improving script: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsImproving(false);
+    }
   };
 
   return (
@@ -253,14 +325,36 @@ export default function VoiceTestingDashboard() {
                                {isRunning ? 'Running Test...' : 'Test Single Persona'}
                              </button>
 
-                             <button
-                               onClick={runBatchVoiceTests}
-                               disabled={isRunning || personas.length === 0 || !phoneNumber}
-                               className="w-full px-6 py-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 disabled:opacity-50 shadow-md text-lg"
-                             >
-                               {isRunning ? 'Running Batch Tests...' : 'Test All Personas'}
-                             </button>
-                           </div>
+                                                           <button
+                                onClick={runBatchVoiceTests}
+                                disabled={isRunning || personas.length === 0 || !phoneNumber}
+                                className="w-full px-6 py-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 disabled:opacity-50 shadow-md text-lg"
+                              >
+                                {isRunning ? 'Running Batch Tests...' : 'Test All Personas'}
+                              </button>
+
+                              <button
+                                onClick={improveAgentScript}
+                                disabled={isImproving || testResults.length === 0}
+                                className="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50 shadow-md text-lg"
+                              >
+                                {isImproving ? 'Improving Script...' : 'Improve Agent Script'}
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  const originalScript = `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`;
+                                  setCurrentScript(originalScript);
+                                  if (typeof window !== 'undefined') {
+                                    localStorage.removeItem('improvedAgentScript');
+                                  }
+                                  addLog('🔄 Reset to original script');
+                                }}
+                                className="w-full px-6 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 shadow-md text-lg"
+                              >
+                                Reset to Original Script
+                              </button>
+                            </div>
               </div>
             </div>
 
@@ -367,7 +461,32 @@ export default function VoiceTestingDashboard() {
                        </div>
                      </div>
                    </div>
-      </div>
-    </div>
-  );
-}
+
+                   {/* Current Script Display */}
+                   <div className="mt-8">
+                     <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                       <h3 className="text-lg font-bold text-black mb-4">Current Agent Script</h3>
+                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                         <pre className="text-sm text-black whitespace-pre-wrap font-medium">
+                           {currentScript}
+                         </pre>
+                       </div>
+                     </div>
+                 </div>
+
+                 {/* Improvement Toast */}
+                 {showImprovementToast && (
+                   <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+                     <div className="flex items-center">
+                       <div className="text-2xl mr-3">✅</div>
+                       <div>
+                         <div className="font-bold">Agent Script Improved!</div>
+                         <div className="text-sm">You can now test the improved agent with a persona.</div>
+                       </div>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             </div>
+           );
+         }
