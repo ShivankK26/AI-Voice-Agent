@@ -9,7 +9,7 @@ const client = twilio(
 
 export async function POST(req: NextRequest) {
   try {
-    const { phoneNumber, customerName, amount, roomName } = await req.json();
+    const { phoneNumber, customerName, amount, roomName, script } = await req.json();
 
     if (!phoneNumber) {
       return NextResponse.json(
@@ -29,9 +29,12 @@ export async function POST(req: NextRequest) {
 
     console.log('📞 INITIATING CALL TO:', phoneNumber);
     
-    // Create TwiML for the call
+        // Create TwiML for the call
     const twiml = new twilio.twiml.VoiceResponse();
-    
+
+    // Use custom script if provided, otherwise use default
+    const agentScript = script || 'You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don\'t be too pushy, but be firm about the payment.';
+
     // Welcome message
     twiml.say({
       voice: 'alice',
@@ -43,7 +46,7 @@ export async function POST(req: NextRequest) {
       input: ['speech'],
       timeout: 10,
       speechTimeout: 'auto',
-      action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+                       action: `https://ebd0dfd7b22b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(agentScript)}`,
       method: 'POST'
     });
     
@@ -59,7 +62,7 @@ export async function POST(req: NextRequest) {
       language: 'en-US'
     }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
 
-    console.log('🔗 WEBHOOK URL: https://b2048dbae7ec.ngrok-free.app/api/call/interactive');
+                   console.log('🔗 WEBHOOK URL: https://ebd0dfd7b22b.ngrok-free.app/api/call/interactive');
 
     // Make the outbound call using Twilio
     const call = await client.calls.create({

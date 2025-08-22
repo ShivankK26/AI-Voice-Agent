@@ -11,6 +11,11 @@ export async function POST(req: NextRequest) {
   console.log('🎤 INTERACTIVE WEBHOOK RECEIVED');
   console.log('🔍 TestTracker import check:', typeof testTracker);
   
+  // Get the script from URL parameters
+  const { searchParams } = new URL(req.url);
+  const script = searchParams.get('script');
+  console.log('📝 Script received:', script ? 'Custom script' : 'Default script');
+  
   try {
     const formData = await req.formData();
     const speechResult = formData.get('SpeechResult') as string;
@@ -69,20 +74,20 @@ export async function POST(req: NextRequest) {
       // User spoke and we understood them
       console.log('✅ Speech detected:', speechResult);
       
-      try {
-        // Get AI response from Claude
-        const response = await anthropic.messages.create({
-          model: 'claude-opus-4-1-20250805',
-          max_tokens: 200,
-          temperature: 0.7,
-          system: `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`,
-          messages: [
-            {
-              role: 'user',
-              content: `Customer said: "${speechResult}". Respond naturally as a debt collection agent. Keep your response under 2 sentences.`
-            }
-          ]
-        });
+                       try {
+                   // Get AI response from Claude
+                   const response = await anthropic.messages.create({
+                     model: 'claude-opus-4-1-20250805',
+                     max_tokens: 200,
+                     temperature: 0.7,
+                     system: script || `You are Sarah, a professional debt collection agent from First National Bank. You are calling about an overdue credit card payment of $1,250.00. Be polite, professional, and helpful. Keep responses concise and natural for phone conversation. Don't be too pushy, but be firm about the payment.`,
+                     messages: [
+                       {
+                         role: 'user',
+                         content: `Customer said: "${speechResult}". Respond naturally as a debt collection agent. Keep your response under 2 sentences.`
+                       }
+                     ]
+                   });
 
         const aiResponse = response.content[0]?.type === 'text' ? response.content[0].text : 'I understand. Let me help you with payment options.';
 
@@ -116,7 +121,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          action: `https://ebd0dfd7b22b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -139,7 +144,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+          action: `https://ebd0dfd7b22b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -163,7 +168,7 @@ export async function POST(req: NextRequest) {
         input: ['speech'],
         timeout: 8,
         speechTimeout: 'auto',
-        action: 'https://b2048dbae7ec.ngrok-free.app/api/call/interactive',
+        action: `https://ebd0dfd7b22b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
         method: 'POST'
       });
 

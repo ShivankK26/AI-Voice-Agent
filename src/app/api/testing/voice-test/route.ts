@@ -31,7 +31,7 @@ export interface VoiceTestResult {
 
 export async function POST(req: NextRequest) {
   try {
-    const { persona, phoneNumber, testDuration = 120 } = await req.json(); // 2 minutes for proper analysis
+    const { persona, phoneNumber, testDuration = 120, script } = await req.json(); // 2 minutes for proper analysis
 
     console.log(`🎤 Starting voice test with persona: ${persona.name} on ${phoneNumber}`);
 
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
 
     // Step 1: Initiate a real call to the persona
     console.log('📞 Initiating real voice call...');
+    console.log('📝 Using script:', script ? 'Custom script provided' : 'Default script');
     
     const callResponse = await fetch(`${req.nextUrl.origin}/api/call?testId=${testId}`, {
       method: 'POST',
@@ -54,7 +55,8 @@ export async function POST(req: NextRequest) {
         phoneNumber: phoneNumber,
         customerName: persona.name,
         amount: 1500,
-        roomName: `test_${testId}`
+        roomName: `test_${testId}`,
+        script: script // Pass the script to the call endpoint
       })
     });
 
