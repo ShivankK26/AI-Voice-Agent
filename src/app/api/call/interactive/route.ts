@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
+          action: `${process.env.NEXT_PUBLIC_BASE_URL}/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
           input: ['speech'],
           timeout: 8,
           speechTimeout: 'auto',
-          action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
+          action: `${process.env.NEXT_PUBLIC_BASE_URL}/api/call/interactive?script=${encodeURIComponent(script || '')}`,
           method: 'POST'
         });
 
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
         input: ['speech'],
         timeout: 8,
         speechTimeout: 'auto',
-        action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(script || '')}`,
+        action: `${process.env.NEXT_PUBLIC_BASE_URL}/api/call/interactive?script=${encodeURIComponent(script || '')}`,
         method: 'POST'
       });
 

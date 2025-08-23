@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       input: ['speech'],
       timeout: 10,
       speechTimeout: 'auto',
-      action: `https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive?script=${encodeURIComponent(agentScript)}`,
+      action: `${process.env.NEXT_PUBLIC_BASE_URL}/api/call/interactive?script=${encodeURIComponent(agentScript)}`,
       method: 'POST'
     });
     
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       language: 'en-US'
     }, 'Thank you for your time. Please call us back when you are ready to discuss payment arrangements. Have a great day.');
 
-    console.log('🔗 WEBHOOK URL: https://d4e5cc36bc5b.ngrok-free.app/api/call/interactive');
+    console.log('🔗 WEBHOOK URL:', `${process.env.NEXT_PUBLIC_BASE_URL}/api/call/interactive`);
 
     // Make the outbound call using Twilio
     const call = await client.calls.create({
